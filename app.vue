@@ -1,14 +1,14 @@
 <template>
-  <div class="relative">
+  <div class="relative bg-primary w-screen h-screen">
     <div
-      class="fixed flex justify-center items-center left-[20%] right-[20%] top-1/4 bottom-1/4"
+      class="fixed flex justify-center items-center left-[10%] right-[10%] top-[10%] bottom-[10%] md:left-[20%] md:right-[20%] md:top-1/4 md:bottom-1/4"
     >
       <QuizControls @start-clicked="start()" v-if="quizState === 'idle'" />
     </div>
 
     <MusicQuiz
       :options="question?.options"
-      class="top-1/4 left-1/4 right-1/4 bottom-1/4 z-10 fixed"
+      class="left-[10%] right-[10%] md:left-1/4 md:right-1/4 bottom-1/4 z-10 fixed"
       v-if="quizState === 'playing-music'"
       @answer-clicked="(country) => answer(country)"
     />
@@ -18,15 +18,15 @@
     />
 
     <div
-      class="fixed left-1/4 right-1/4 top-0 pt-16"
+      class="fixed left-[10%] right-[10%] md:left-1/4 md:right-1/4 top-0 pt-16"
       v-if="quizState === 'playing-music'"
     >
       <div
-        class="text-5xl font-thin text-white flex flex-col gap-1 flex-grow justify-center items-center"
+        class="text-2xl md:text-5xl font-thin text-white flex flex-col gap-1 flex-grow justify-center items-center"
       >
         Song {{ step }} / {{ totalQuestions }} <br />
 
-        <div class="text-xl font-thin">
+        <div class="text-lg md:text-xl font-thin">
           Correct answers: {{ points }}/{{ step - 1 }}
         </div>
       </div>

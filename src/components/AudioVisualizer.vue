@@ -84,7 +84,7 @@ onMounted(() => {
 <template>
   <div
     ref="container"
-    class="w-128 h-128 w-screen h-screen fixed flex justify-center items-center"
+    class="w-128 h-128 bg-primary w-screen h-screen fixed flex justify-center items-center"
   >
     <canvas class="z-0" ref="canvasEl"></canvas>
   </div>

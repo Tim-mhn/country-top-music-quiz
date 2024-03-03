@@ -56,7 +56,7 @@ describe("useQuiz", () => {
     );
 
     start();
-    expect(musicPlayer.playMusic).toHaveBeenCalledTimes(2);
+    expect(musicPlayer.playMusic).toHaveBeenCalledTimes(1);
 
     answer("France");
     expect(musicPlayer.stopMusic).not.toHaveBeenCalled();

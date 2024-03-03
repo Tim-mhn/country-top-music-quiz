@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div class="relative flex flex-col w-full h-full bg-slate-800 px-16">
-      <div class="flex flex-row flex-grow max-h-[80%]">
-        <div class="pt-8 flex flex-grow justify-center items-center">
+    <div
+      class="relative flex flex-col w-full h-full bg-primary px-16 py-8 md:py-0"
+    >
+      <div class="flex flex-col md:flex-row flex-grow max-h-[80%]">
+        <div class="md:pt-8 flex md:flex-grow justify-center items-center">
           <img
             class="object-contain rounded-3xl max-h-[512px]"
             :src="track.image"
@@ -10,7 +12,7 @@
         </div>
 
         <div
-          class="text-slate-100 max-w-[50%] flex flex-col gap-8 justify-center items-center pt-8 flex-grow"
+          class="text-tertiary md:max-w-[50%] flex flex-col md:gap-8 justify-center items-center pt-8 flex-grow"
         >
           <div
             class="flex flex-col justify-center items-center gap-1 text-center"
@@ -19,7 +21,7 @@
             <div class="text-2xl font-thin">{{ track.artist }}</div>
           </div>
 
-          <div class="text-5xl font-semibold">
+          <div class="text-3xl md:text-5xl text-center font-semibold">
             #{{ track.position }} in {{ country }}
           </div>
         </div>

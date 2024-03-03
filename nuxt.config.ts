@@ -12,5 +12,19 @@ export default defineNuxtConfig({
       include: ["Button", "DataTable"],
     },
   },
+  tailwindcss: {
+    config: {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#191919",
+            secondary: "#750E21",
+            tertiary: "#BED754",
+            "tertiary-hover": "#E3651D",
+          },
+        },
+      },
+    },
+  },
   css: ["primevue/resources/themes/lara-dark-teal/theme.css"],
 });
