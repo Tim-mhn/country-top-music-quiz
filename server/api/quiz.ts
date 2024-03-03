@@ -77,6 +77,7 @@ export default defineEventHandler(async () => {
           name: track.name,
           artist: track.artists[0]?.name || "Unknown",
           url: track.previewUrl as string,
+          image: track.album.images[0].url,
         },
       };
     })

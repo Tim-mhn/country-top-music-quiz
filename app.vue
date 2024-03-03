@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <div
-      class="fixed flex justify-center items-center left-1/3 right-1/3 top-1/3 bottom-1/3"
+      class="fixed flex justify-center items-center left-[20%] right-[20%] top-1/4 bottom-1/4"
     >
       <QuizControls @start-clicked="start()" v-if="quizState === 'idle'" />
     </div>
@@ -9,14 +9,14 @@
     <MusicQuiz
       :options="question?.options"
       class="top-1/4 left-1/4 right-1/4 bottom-1/4 z-10 fixed"
-      v-if="quizState === 'in-progress'"
+      v-if="quizState === 'playing-music'"
       @answer-clicked="(country) => answer(country)"
     />
-    <AudioVisualizer v-if="quizState === 'in-progress'" />
+    <AudioVisualizer v-if="quizState === 'playing-music'" />
 
     <div
       class="fixed left-1/4 right-1/4 bottom-[10%]"
-      v-if="quizState === 'in-progress'"
+      v-if="quizState === 'playing-music'"
     >
       <div
         class="text-5xl text-slate-300 font-semibold flex flex-grow justify-center items-center"
@@ -33,11 +33,31 @@
       <div>Results</div>
       <div>{{ points }} / {{ totalQuestions }}</div>
     </div>
+
+    <TrackInfo
+      class="fixed left-0 right-0 bottom-0 top-0"
+      v-if="quizState === 'showing-track'"
+      :track="question.track"
+      :country="question.country"
+    >
+      <button
+        @click="goToNextQuestion"
+        class="text-4xl text-slate-100 font-semibold hover:text-slate-500"
+      >
+        Continue
+      </button>
+    </TrackInfo>
+
+    <Toast />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import Button from "primevue/button";
+import TrackInfo from "./src/components/TrackInfo.vue";
+import Toast from "primevue/toast";
+
 import AudioVisualizer from "./src/components/AudioVisualizer.vue";
 import QuizControls from "./src/components/QuizControls.vue";
 import MusicQuiz from "./src/components/MusicQuiz.vue";
@@ -45,8 +65,11 @@ import MusicQuiz from "./src/components/MusicQuiz.vue";
 import { useFetchTracksQuiz } from "./src/composables/useFetchTracksQuiz";
 import { useMusicPlayer } from "./src/composables/useMusicPlayer";
 import { useQuiz } from "./src/composables/useQuiz";
+import { useToastService } from "./src/composables/useToastService";
 
 const { data: quizTracks } = await useFetchTracksQuiz();
+
+const toastService = useToastService();
 
 const musicUrls = computed<string[]>(() => {
   if (!quizTracks.value) return [];
@@ -61,8 +84,16 @@ watch(quizTracks, (p) => {
 
 const musicPlayer = useMusicPlayer();
 
-const { question, step, totalQuestions, start, answer, points, quizState } =
-  useQuiz({ musicUrls, quiz: quizTracks }, musicPlayer);
+const {
+  question,
+  step,
+  totalQuestions,
+  start,
+  answer,
+  points,
+  quizState,
+  goToNextQuestion,
+} = useQuiz({ musicUrls, quiz: quizTracks }, { musicPlayer, toastService });
 </script>
 
 <style scoped>
@@ -79,4 +110,3 @@ const { question, step, totalQuestions, start, answer, points, quizState } =
   filter: drop-shadow(0 0 2em #42b883aa);
 }
 </style>
-./src/composables/getMusic./src/composables/useFetchTracksQuiz
