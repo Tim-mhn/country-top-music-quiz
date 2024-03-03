@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev --dot .env.local",
+    "dev": "nuxt dev",
     "test": "vitest",
     "build": "nuxt build",
     "preview": "vite preview"

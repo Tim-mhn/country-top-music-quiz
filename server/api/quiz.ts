@@ -1,7 +1,7 @@
 import camelcaseKeys from "camelcase-keys";
-import type { CountryTopTracks, SpotifyPlaylist } from "~/dtos/playlist";
+import type { SpotifyPlaylist } from "~/src/dtos/playlist";
+import type { MusicQuiz } from "~/src/dtos/quiz";
 import { shuffle } from "~/src/utils/array";
-import { getAccessToken } from "~/src/utils/getAccessToken";
 import { randomElement } from "~/src/utils/random";
 
 function objectKeys<T extends object>(obj: T) {
@@ -27,8 +27,15 @@ const isNotNullOrUndefined = <T>(v: T | null | undefined): v is T => {
   return v !== null && v !== undefined;
 };
 
+const getQuestionOptionsForCountry = ({ country }: { country: string }) => {
+  const wrongCountries = shuffle(
+    objectKeys(COUNTRY_TOP_PLAYLIST_ID).filter((c) => c !== country)
+  ).slice(0, 3);
+
+  return shuffle([country, ...wrongCountries]);
+};
 export default defineEventHandler(async () => {
-  const accessToken = await getAccessToken();
+  const accessToken = await $fetch("/api/token");
 
   const authorizationHeader = `Bearer ${accessToken}`;
 
@@ -54,14 +61,11 @@ export default defineEventHandler(async () => {
     })
   );
 
-  return shuffle(countryPlaylists)
+  const countryTopTracks = shuffle(countryPlaylists)
     .map(({ country, playlist }) => {
       const tracksWithUrls = playlist.tracks.items.filter((i) =>
         isNotNullOrUndefined(i.track.previewUrl)
       );
-
-      console.log(playlist.tracks);
-      console.log(playlist.tracks.items.map((i) => i.track.previewUrl));
 
       if (tracksWithUrls.length === 0) return null;
 
@@ -76,5 +80,15 @@ export default defineEventHandler(async () => {
         },
       };
     })
-    .filter(isNotNullOrUndefined) satisfies CountryTopTracks;
+    .filter(isNotNullOrUndefined);
+
+  const musicQuiz: MusicQuiz = countryTopTracks.map(({ country, track }) => {
+    return {
+      country,
+      track,
+      options: getQuestionOptionsForCountry({ country }),
+    };
+  });
+
+  return musicQuiz;
 });

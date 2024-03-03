@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 const container = ref<HTMLElement>();
 const canvasEl = ref<HTMLCanvasElement>();
 
-const bufferLength = 500;
+const bufferLength = 70;
 
 const maxHeight = window.innerHeight;
 
@@ -33,11 +33,6 @@ const updateDataArray = () => {
   dataArray.value = nextDataArray(dataArray.value);
 };
 onMounted(() => {
-  console.log({
-    container: container.value,
-    canvasEl: canvasEl.value,
-  });
-
   if (!container.value || !canvasEl.value) return;
 
   if (!canvasEl.value) return;

@@ -1,13 +1,3 @@
-export type CountryTopTracks = CountryTopTrack[];
-
-type CountryTopTrack = {
-  country: string;
-  track: {
-    artist: string;
-    name: string;
-    url: string;
-  };
-};
 export type SpotifyPlaylist = {
   collaborative: boolean;
   description: string;

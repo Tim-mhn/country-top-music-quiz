@@ -21,5 +21,4 @@ let dataArray = initialDataArray;
 
 for (let i = 0; i < 10; i++) {
   dataArray = nextDataArray(dataArray);
-  console.log(dataArray);
 }

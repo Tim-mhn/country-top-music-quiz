@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { type Quiz } from "../models/quiz";
 import type { MusicPlayer } from "../models/music-player";
 import { type QuizState, useQuiz } from "./useQuiz";
 import { quizBuilder } from "../models/quiz.mock";
+import type { MusicQuiz } from "../dtos/quiz";
 
 describe("useQuiz", () => {
   const musicUrls = ["music-1.mp3", "music-2.mp3", "music-3.mp3"];
 
   let musicPlayer!: MusicPlayer;
 
-  const quiz: Quiz = quizBuilder()
+  const quiz: MusicQuiz = quizBuilder()
     .addQuestion({
       answer: "France",
       otherOptions: ["Italy", "Spain"],
@@ -79,5 +79,20 @@ describe("useQuiz", () => {
 
     answer("France");
     expect(quizState.value).toEqual<QuizState>("finished");
+  });
+
+  it("does not play the music when we answer the last question", () => {
+    const { start, answer, quizState } = useQuiz(
+      { musicUrls, quiz },
+      musicPlayer
+    );
+
+    start();
+
+    answer("France");
+    answer("France");
+    answer("France");
+
+    expect(musicPlayer.playMusic).toHaveBeenCalledTimes(3);
   });
 });

@@ -42,30 +42,27 @@ import AudioVisualizer from "./src/components/AudioVisualizer.vue";
 import QuizControls from "./src/components/QuizControls.vue";
 import MusicQuiz from "./src/components/MusicQuiz.vue";
 
-import { usePlaylist } from "./src/utils/getMusic";
+import { useFetchTracksQuiz } from "./src/composables/useFetchTracksQuiz";
 import { useMusicPlayer } from "./src/composables/useMusicPlayer";
-import { QUIZ } from "./src/models/quiz.mock";
 import { useQuiz } from "./src/composables/useQuiz";
 
-const { data: countryTopTracks } = usePlaylist();
+const { data: quizTracks } = await useFetchTracksQuiz();
 
 const musicUrls = computed<string[]>(() => {
-  if (!countryTopTracks.value) return [];
-  const urls = countryTopTracks.value.map(({ track }) => track.url);
-
-  console.log({ urls });
+  if (!quizTracks.value) return [];
+  const urls = quizTracks.value.map(({ track }) => track.url);
 
   return urls;
 });
 
-watch(countryTopTracks, (p) => {
+watch(quizTracks, (p) => {
   console.log(p);
 });
 
 const musicPlayer = useMusicPlayer();
 
 const { question, step, totalQuestions, start, answer, points, quizState } =
-  useQuiz({ musicUrls, quiz: QUIZ }, musicPlayer);
+  useQuiz({ musicUrls, quiz: quizTracks }, musicPlayer);
 </script>
 
 <style scoped>
@@ -82,3 +79,4 @@ const { question, step, totalQuestions, start, answer, points, quizState } =
   filter: drop-shadow(0 0 2em #42b883aa);
 }
 </style>
+./src/composables/getMusic./src/composables/useFetchTracksQuiz

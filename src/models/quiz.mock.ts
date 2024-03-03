@@ -1,4 +1,4 @@
-import type { Quiz } from "./quiz";
+import type { MusicQuiz } from "../dtos/quiz";
 
 const allCountries = [
   "USA",
@@ -53,7 +53,7 @@ export const QUIZ = allCountries.map((country) => ({
   ].sort(),
 }));
 
-export const quizBuilder = (_quiz: Quiz = []) => {
+export const quizBuilder = (_quiz: MusicQuiz = []) => {
   const addQuestion = ({
     answer,
     otherOptions,
@@ -61,7 +61,10 @@ export const quizBuilder = (_quiz: Quiz = []) => {
     answer: string;
     otherOptions: string[];
   }) => {
-    const quiz = [..._quiz, { answer, options: [answer, ...otherOptions] }];
+    const quiz = [
+      ..._quiz,
+      { country: answer, options: [answer, ...otherOptions], track: {} as any },
+    ];
 
     return quizBuilder(quiz);
   };
