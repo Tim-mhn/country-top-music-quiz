@@ -5,6 +5,7 @@ export type Track = {
   name: string;
   url: string;
   image: string;
+  position: number;
 };
 export type MusicQuiz = Array<{
   country: Country;

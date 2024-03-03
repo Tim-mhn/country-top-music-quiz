@@ -10,14 +10,18 @@
         </div>
 
         <div
-          class="text-slate-100 flex flex-col gap-8 justify-center items-center pt-8 flex-grow"
+          class="text-slate-100 max-w-[50%] flex flex-col gap-8 justify-center items-center pt-8 flex-grow"
         >
-          <div class="flex flex-col justify-center items-center gap-1">
-            <div class="text-3xl font-">{{ track.name }}</div>
+          <div
+            class="flex flex-col justify-center items-center gap-1 text-center"
+          >
+            <div class="text-3xl">{{ track.name }}</div>
             <div class="text-2xl font-thin">{{ track.artist }}</div>
           </div>
 
-          <div class="text-5xl font-semibold">{{ country }}</div>
+          <div class="text-5xl font-semibold">
+            #{{ track.position }} in {{ country }}
+          </div>
         </div>
       </div>
 

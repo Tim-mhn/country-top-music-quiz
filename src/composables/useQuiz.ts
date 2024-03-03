@@ -39,7 +39,6 @@ export function useQuiz(
     const correctAnswer = country === question.value.country;
     if (correctAnswer) handleGoodAnswer();
     else handleBadAnswer();
-    musicPlayer.stopMusic();
     quizState.value = "showing-track";
   };
 
@@ -50,6 +49,8 @@ export function useQuiz(
   };
 
   const goToNextQuestion = () => {
+    musicPlayer.stopMusic();
+
     index.value += 1;
     quizState.value = "playing-music";
 

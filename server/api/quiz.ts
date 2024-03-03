@@ -1,5 +1,5 @@
 import camelcaseKeys from "camelcase-keys";
-import type { SpotifyPlaylist } from "~/src/dtos/playlist";
+import type { Item, SpotifyPlaylist } from "~/src/dtos/playlist";
 import type { MusicQuiz } from "~/src/dtos/quiz";
 import { shuffle } from "~/src/utils/array";
 import { randomElement } from "~/src/utils/random";
@@ -40,36 +40,41 @@ export default defineEventHandler(async () => {
   const authorizationHeader = `Bearer ${accessToken}`;
 
   const countryPlaylists = await Promise.all(
-    objectKeys(COUNTRY_TOP_PLAYLIST_ID).map(async (country) => {
-      const countryPlaylistId = COUNTRY_TOP_PLAYLIST_ID[country];
-      const _playlist = await $fetch(
-        `https://api.spotify.com/v1/playlists/${countryPlaylistId}`,
-        {
-          headers: {
-            Authorization: authorizationHeader,
-          },
-          method: "GET",
-          responseType: "json",
-        }
-      );
+    shuffle(objectKeys(COUNTRY_TOP_PLAYLIST_ID))
+      .slice(0, 10)
+      .map(async (country) => {
+        const countryPlaylistId = COUNTRY_TOP_PLAYLIST_ID[country];
+        const _playlist = await $fetch(
+          `https://api.spotify.com/v1/playlists/${countryPlaylistId}`,
+          {
+            headers: {
+              Authorization: authorizationHeader,
+            },
+            method: "GET",
+            responseType: "json",
+          }
+        );
 
-      const playlist = camelcaseKeys(_playlist as any, {
-        deep: true,
-      }) as SpotifyPlaylist;
+        const playlist = camelcaseKeys(_playlist as any, {
+          deep: true,
+        }) as SpotifyPlaylist;
 
-      return { country, playlist };
-    })
+        return { country, playlist };
+      })
   );
 
   const countryTopTracks = shuffle(countryPlaylists)
     .map(({ country, playlist }) => {
-      const tracksWithUrls = playlist.tracks.items.filter((i) =>
-        isNotNullOrUndefined(i.track.previewUrl)
-      );
+      const tracksWithUrls = playlist.tracks.items
+        .map(
+          (i, index) =>
+            ({ ...i, position: index + 1 } as Item & { position: number })
+        )
+        .filter((i) => isNotNullOrUndefined(i.track.previewUrl));
 
       if (tracksWithUrls.length === 0) return null;
 
-      const { track } = randomElement(tracksWithUrls);
+      const { track, position } = randomElement(tracksWithUrls);
 
       return {
         country,
@@ -78,6 +83,7 @@ export default defineEventHandler(async () => {
           artist: track.artists[0]?.name || "Unknown",
           url: track.previewUrl as string,
           image: track.album.images[0].url,
+          position,
         },
       };
     })

@@ -1,36 +1,22 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
+const props = defineProps<{ getAudioSpectrum: () => number[] }>();
 const container = ref<HTMLElement>();
 const canvasEl = ref<HTMLCanvasElement>();
 
-const bufferLength = 70;
+const bufferLength = 400;
 
 const maxHeight = window.innerHeight;
 
-const randomSign = () => (Math.random() > 0.5 ? 1 : -1);
 const initialDataArray = Array.from({ length: bufferLength }).map(() =>
   Math.floor(Math.random() * maxHeight)
 );
 
-const nextDataArray = (currentDataArray: number[]) => {
-  return currentDataArray.map((barHeight) => {
-    let nextFrameBarHeight =
-      barHeight +
-      ((randomSign() *
-        Math.abs(Math.sin(Date.now() * 0.0001)) *
-        Math.random()) /
-        5) *
-        (maxHeight / 3);
-
-    return Math.max(0, Math.floor(Math.min(maxHeight, nextFrameBarHeight)));
-  });
-};
-
 const dataArray = ref(initialDataArray);
 
 const updateDataArray = () => {
-  dataArray.value = nextDataArray(dataArray.value);
+  dataArray.value = props.getAudioSpectrum();
 };
 onMounted(() => {
   if (!container.value || !canvasEl.value) return;
@@ -70,31 +56,24 @@ onMounted(() => {
     if (!canvasEl.value) throw new Error("canvasEl is undefined");
     if (!ctx) throw new Error("ctx is undefined");
 
+    const gapBetweenBars = 4;
     let barHeight: number;
-    for (let i = 0; i < bufferLength; i++) {
-      barHeight = dataArray[i]; // the height of the bar is the dataArray value. Larger sounds will have a higher value and produce a taller bar
-      const red = Math.floor((barHeight * 255) / maxHeight);
-      const green = Math.floor((i * 255) / bufferLength);
-      const blue = Math.floor(((bufferLength - i) * 255) / bufferLength);
 
-      ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+    const visualizerWidth = (barWidth + gapBetweenBars) * bufferLength;
+    const leftPadding = (canvasEl.value.width - visualizerWidth) / 2;
+    x = leftPadding;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i] * 2; // the height of the bar is the dataArray value. Larger sounds will have a higher value and produce a taller bar
+
+      ctx.fillStyle = `rgb(${250}, ${250}, ${250})`;
       ctx.fillRect(
-        canvasEl.value.width / 2 - x, // this will start the bars at the center of the canvasEl and move from right to left
+        x, // this will start the bars at the center of the canvasEl and move from right to left
         canvasEl.value.height - barHeight,
         barWidth,
         barHeight
       ); // draws the bar. the reason we're calculating Y weird here is because the canvasEl starts at the top left corner. So we need to start at the bottom left corner and draw the bars from there
-      x += barWidth; // increases the x value by the width of the bar
-    }
-
-    for (let i = 0; i < bufferLength; i++) {
-      barHeight = dataArray[i]; // the height of the bar is the dataArray value. Larger sounds will have a higher value and produce a taller bar
-      const red = Math.floor((barHeight * 255) / maxHeight);
-      const green = Math.floor((i * 255) / bufferLength);
-      const blue = Math.floor(((bufferLength - i) * 255) / bufferLength);
-      ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-      ctx.fillRect(x, canvasEl.value.height - barHeight, barWidth, barHeight); // this will continue moving from left to right
-      x += barWidth; // increases the x value by the width of the bar
+      x += barWidth + gapBetweenBars;
     }
   };
 
@@ -103,13 +82,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="container" class="w-128 h-128 border border-black">
-    <canvas
-      class="z-0 w-screen h-screen fixed left-0 right-0 top-0 bottom-0"
-      ref="canvasEl"
-      :style="{
-        backgroundImage: 'radial-gradient(darkred 40%, #fc464a 70%)',
-      }"
-    ></canvas>
+  <div
+    ref="container"
+    class="w-128 h-128 w-screen h-screen fixed flex justify-center items-center"
+  >
+    <canvas class="z-0" ref="canvasEl"></canvas>
   </div>
 </template>

@@ -49,15 +49,18 @@ describe("useQuiz", () => {
     expect(musicPlayer.playMusic).toHaveBeenCalledWith("music-1.mp3");
   });
 
-  it("plays the second music when answering one question", () => {
+  it("keeps playing the music after answering a question, it plays the next music when moving on to the next question", () => {
     const { start, answer, goToNextQuestion } = useQuiz(
       { musicUrls, quiz },
       { musicPlayer, toastService }
     );
 
     start();
+    expect(musicPlayer.playMusic).toHaveBeenCalledTimes(2);
 
     answer("France");
+    expect(musicPlayer.stopMusic).not.toHaveBeenCalled();
+
     goToNextQuestion();
 
     expect(musicPlayer.playMusic).toHaveBeenCalledTimes(2);
@@ -103,7 +106,6 @@ describe("useQuiz", () => {
     answer("France");
     goToNextQuestion();
 
-    console.log({ quizState: quizState.value });
     expect(quizState.value).toEqual<QuizState>("finished");
   });
 

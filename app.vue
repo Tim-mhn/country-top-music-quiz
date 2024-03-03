@@ -12,25 +12,31 @@
       v-if="quizState === 'playing-music'"
       @answer-clicked="(country) => answer(country)"
     />
-    <AudioVisualizer v-if="quizState === 'playing-music'" />
+    <AudioVisualizer
+      :get-audio-spectrum="musicPlayer.getAudioSpectrum"
+      v-if="quizState === 'playing-music'"
+    />
 
     <div
-      class="fixed left-1/4 right-1/4 bottom-[10%]"
+      class="fixed left-1/4 right-1/4 top-0 pt-16"
       v-if="quizState === 'playing-music'"
     >
       <div
-        class="text-5xl text-slate-300 font-semibold flex flex-grow justify-center items-center"
+        class="text-5xl font-thin text-white flex flex-col gap-1 flex-grow justify-center items-center"
       >
-        Song {{ step }} / {{ totalQuestions }} <br />Points =
-        {{ points }}
+        Song {{ step }} / {{ totalQuestions }} <br />
+
+        <div class="text-xl font-thin">
+          Correct answers: {{ points }}/{{ step - 1 }}
+        </div>
       </div>
     </div>
 
     <div
-      class="text-5xl text-slate-800 fixed top-1/3 bottom-1/3 left-1/3 right-1/3 flex flex-col items-center justify-center"
+      class="text-5xl text-slate-100 fixed top-1/3 bottom-1/3 left-1/3 right-1/3 flex flex-col items-center justify-center gap-4"
       v-if="quizState === 'finished'"
     >
-      <div>Results</div>
+      <div class="text-6xl font-thin">Results</div>
       <div>{{ points }} / {{ totalQuestions }}</div>
     </div>
 
