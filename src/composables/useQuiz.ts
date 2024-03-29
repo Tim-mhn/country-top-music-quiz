@@ -3,7 +3,7 @@ import type { MusicPlayer } from "../models/music-player";
 import { ref, computed, toValue } from "vue";
 import type { ToastService } from "../models/toat-service";
 import { useCountdown } from "./useCountdown";
-
+import { useScoreLadder } from "./useScoreLadder";
 export type QuizState = "idle" | "playing-music" | "finished" | "showing-track";
 
 const NO_ANSWER = null;
@@ -37,6 +37,8 @@ export function useQuiz(
   const { seconds, start: startCountdown } = useCountdown(
     QUESTION_DURATION_IN_SECS
   );
+
+  const { saveScore } = useScoreLadder();
 
   const handleGoodAnswer = () => {
     points.value += 1;
@@ -80,6 +82,10 @@ export function useQuiz(
 
     if (index.value === toValue(quiz)?.length) {
       quizState.value = "finished";
+      saveScore(points.value);
+      navigateTo({
+        path: "results",
+      });
       return;
     }
 

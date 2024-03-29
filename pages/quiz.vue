@@ -2,10 +2,6 @@
   <div
     class="relative flex flex-col justify-around gap-8 md:gap-16 bg-primary w-screen h-screen py-8 md:py-16"
   >
-    <div class="flex justify-center items-center" v-if="quizState === 'idle'">
-      <QuizControls @start-clicked="start()" />
-    </div>
-
     <div class="z-10" v-if="quizState === 'playing-music'">
       <div
         class="text-2xl md:text-5xl font-thin text-white flex flex-col gap-1 flex-grow justify-center items-center"
@@ -58,24 +54,24 @@
       :seconds="secondsRemaining"
     />
 
-    <Toast />
+    <Toast position="bottom-center" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import Button from "primevue/button";
-import TrackInfo from "./src/components/TrackInfo.vue";
+import TrackInfo from "../src/components/TrackInfo.vue";
 import Toast from "primevue/toast";
 
-import AudioVisualizer from "./src/components/AudioVisualizer.vue";
-import QuizControls from "./src/components/QuizControls.vue";
-import MusicQuiz from "./src/components/MusicQuiz.vue";
-import Countdown from "./src/components/Countdown.vue";
-import { useFetchTracksQuiz } from "./src/composables/useFetchTracksQuiz";
-import { useMusicPlayer } from "./src/composables/useMusicPlayer";
-import { useQuiz } from "./src/composables/useQuiz";
-import { useToastService } from "./src/composables/useToastService";
+import AudioVisualizer from "../src/components/AudioVisualizer.vue";
+import QuizControls from "../src/components/QuizControls.vue";
+import MusicQuiz from "../src/components/MusicQuiz.vue";
+import Countdown from "../src/components/Countdown.vue";
+import { useFetchTracksQuiz } from "../src/composables/useFetchTracksQuiz";
+import { useMusicPlayer } from "../src/composables/useMusicPlayer";
+import { useQuiz } from "../src/composables/useQuiz";
+import { useToastService } from "../src/composables/useToastService";
 
 const { data: quizTracks } = await useFetchTracksQuiz();
 
@@ -90,6 +86,8 @@ const musicUrls = computed<string[]>(() => {
 
 const musicPlayer = useMusicPlayer();
 
+onMounted(() => start());
+
 const {
   question,
   step,
@@ -100,7 +98,10 @@ const {
   quizState,
   goToNextQuestion,
   secondsRemaining,
-} = useQuiz({ musicUrls, quiz: quizTracks }, { musicPlayer, toastService });
+} = useQuiz(
+  { musicUrls, quiz: () => quizTracks.value || [] },
+  { musicPlayer, toastService }
+);
 </script>
 
 <style scoped>

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue"],
+  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue", "@nuxt/test-utils/module"],
   runtimeConfig: {
     spotifyClientId: "",
     spotifyClientSecret: "",
