@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, vitest } from "vitest";
 import type { MusicPlayer } from "../models/music-player";
 import { type QuizState, useQuiz } from "./useQuiz";
 import { quizBuilder } from "../models/quiz.mock";
@@ -147,6 +147,45 @@ describe("useQuiz", () => {
     expect(quizState.value).toEqual<QuizState>("playing-music");
     expect(musicPlayer.playMusic).toHaveBeenCalledTimes(2);
     expect(musicPlayer.playMusic).toHaveBeenCalledWith("music-2.mp3");
+  });
+
+  it("answers nothing if the user has not answered when the music stops", () => {
+    vitest.useFakeTimers();
+
+    const { start, quizState, goToNextQuestion } = useQuiz(
+      { musicUrls, quiz },
+      { musicPlayer, toastService }
+    );
+
+    start();
+
+    vitest.advanceTimersByTime(30 * 1000);
+
+    expect(quizState.value).toEqual<QuizState>("showing-track");
+
+    goToNextQuestion();
+    vitest.advanceTimersByTime(30 * 1000);
+    expect(quizState.value).toEqual<QuizState>("showing-track");
+  });
+
+  it("shows the time remaining to answer", () => {
+    const { start, goToNextQuestion, secondsRemaining, answer } = useQuiz(
+      { musicUrls, quiz },
+      { musicPlayer, toastService }
+    );
+
+    start();
+
+    expect(secondsRemaining.value).toEqual(30);
+
+    vitest.advanceTimersByTime(5 * 1000);
+    expect(secondsRemaining.value).toEqual(25);
+
+    answer("some country");
+
+    goToNextQuestion();
+
+    expect(secondsRemaining.value).toEqual(30);
   });
 
   describe("feedback", () => {

@@ -24,7 +24,7 @@ export function useMusicPlayer() {
   };
 
   const getAudioSpectrum = () => {
-    if (!analyser.value) return;
+    if (!analyser.value) return [];
 
     const frequencyData = new Uint8Array(analyser.value.frequencyBinCount);
 

@@ -1,26 +1,12 @@
 <template>
-  <div class="relative bg-primary w-screen h-screen">
-    <div
-      class="fixed flex justify-center items-center left-[10%] right-[10%] top-[10%] bottom-[10%] md:left-[20%] md:right-[20%] md:top-1/4 md:bottom-1/4"
-    >
-      <QuizControls @start-clicked="start()" v-if="quizState === 'idle'" />
+  <div
+    class="relative flex flex-col justify-around gap-8 md:gap-16 bg-primary w-screen h-screen py-8 md:py-16"
+  >
+    <div class="flex justify-center items-center" v-if="quizState === 'idle'">
+      <QuizControls @start-clicked="start()" />
     </div>
 
-    <MusicQuiz
-      :options="question?.options"
-      class="left-[10%] right-[10%] md:left-1/4 md:right-1/4 bottom-1/4 z-10 fixed"
-      v-if="quizState === 'playing-music'"
-      @answer-clicked="(country) => answer(country)"
-    />
-    <AudioVisualizer
-      :get-audio-spectrum="musicPlayer.getAudioSpectrum"
-      v-if="quizState === 'playing-music'"
-    />
-
-    <div
-      class="fixed left-[10%] right-[10%] md:left-1/4 md:right-1/4 top-0 pt-16"
-      v-if="quizState === 'playing-music'"
-    >
+    <div class="z-10" v-if="quizState === 'playing-music'">
       <div
         class="text-2xl md:text-5xl font-thin text-white flex flex-col gap-1 flex-grow justify-center items-center"
       >
@@ -32,6 +18,17 @@
       </div>
     </div>
 
+    <MusicQuiz
+      :options="question?.options || []"
+      class="px-[10%] z-10"
+      v-if="quizState === 'playing-music'"
+      @answer-clicked="(country) => answer(country)"
+    />
+    <AudioVisualizer
+      :get-audio-spectrum="musicPlayer.getAudioSpectrum"
+      v-if="quizState === 'playing-music'"
+    />
+
     <div
       class="text-5xl text-slate-100 fixed top-1/3 bottom-1/3 left-1/3 right-1/3 flex flex-col items-center justify-center gap-4"
       v-if="quizState === 'finished'"
@@ -41,8 +38,9 @@
     </div>
 
     <TrackInfo
+      Info
       class="fixed left-0 right-0 bottom-0 top-0"
-      v-if="quizState === 'showing-track'"
+      v-if="quizState === 'showing-track' && question"
       :track="question.track"
       :country="question.country"
     >
@@ -53,6 +51,12 @@
         Continue
       </button>
     </TrackInfo>
+
+    <Countdown
+      class="mx-auto z-10 py-16"
+      v-if="quizState === 'playing-music'"
+      :seconds="secondsRemaining"
+    />
 
     <Toast />
   </div>
@@ -67,7 +71,7 @@ import Toast from "primevue/toast";
 import AudioVisualizer from "./src/components/AudioVisualizer.vue";
 import QuizControls from "./src/components/QuizControls.vue";
 import MusicQuiz from "./src/components/MusicQuiz.vue";
-
+import Countdown from "./src/components/Countdown.vue";
 import { useFetchTracksQuiz } from "./src/composables/useFetchTracksQuiz";
 import { useMusicPlayer } from "./src/composables/useMusicPlayer";
 import { useQuiz } from "./src/composables/useQuiz";
@@ -84,10 +88,6 @@ const musicUrls = computed<string[]>(() => {
   return urls;
 });
 
-watch(quizTracks, (p) => {
-  console.log(p);
-});
-
 const musicPlayer = useMusicPlayer();
 
 const {
@@ -99,6 +99,7 @@ const {
   points,
   quizState,
   goToNextQuestion,
+  secondsRemaining,
 } = useQuiz({ musicUrls, quiz: quizTracks }, { musicPlayer, toastService });
 </script>
 
